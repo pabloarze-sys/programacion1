@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visualizador de Matriz</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <h2>Operaciones</h2>
+      <button id="fillBtn">Llenar Aleatorio</button>
+      <button id="clearBtn">Limpiar</button>
+      <button id="incrementBtn">Incremento Filas</button>
+      <button disabled>Transponer</button>
+      <button disabled>Sumar</button>
+      <button disabled>Multiplicar</button>
+
+      <h2>Ejercicios (1 al 11)</h2>
+      <button id="ex1Btn">Ejercicio 1: Cuadrado Relleno</button>
+      <button id="ex2Btn">Ejercicio 2: Marco Interno</button>
+      <button id="ex3Btn">Ejercicio 3: Cruces</button>
+      <button id="ex4Btn">Ejercicio 4: Bordes y Diagonales</button>
+      <button id="ex5Btn">Ejercicio 5: Bandera</button>
+      <button id="ex6Btn">Ejercicio 6: Relleno Alterno</button>
+      <button id="ex7Btn">Ejercicio 7: Zig-Zag Horizontal</button>
+      <button id="ex8Btn">Ejercicio 8: Relleno en Espiral</button>
+      <button id="ex9Btn">Ejercicio 9: Triángulo Sup. Izquierdo</button>
+      <button id="ex10Btn">Ejercicio 10: Triángulo Inf. Derecho</button>
+      <button id="ex11Btn">Ejercicio 11: Cuadrícula</button>
+    </aside>
+
+    <main class="canvas-area">
+      <div class="canvas-wrapper">
+        <canvas id="matrixCanvas"></canvas>
+      </div>
+    </main>
+  </div>
+
+  <script src="matrix.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
