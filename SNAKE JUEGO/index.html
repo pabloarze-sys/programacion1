@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐍 Snake Multinivel</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="design.css" />
+
+</head>
+<body class="level-1">
+
+  <!-- Pantalla de inicio -->
+  <div id="start-screen" class="screen active">
+    <h1>🐍 Snake Multinivel</h1>
+    <input id="playerName" type="text" placeholder="Ingresa tu nombre" />
+    <button id="btnStart">¡Vamos!</button>
+  </div>
+
+  <!-- Menú de niveles -->
+  <div id="menu-screen" class="screen">
+    <h2>Selecciona un Nivel</h2>
+    <div id="levelsContainer" class="levels"></div>
+    <button id="btnReset">Reiniciar progreso</button>
+  </div>
+
+  <!-- Juego -->
+  <div id="game-screen" class="screen">
+    <div id="game-container">
+      <h2 id="levelTitle">Nivel 1</h2>
+      <canvas id="gameCanvas" width="400" height="400"></canvas>
+      <p>Puntaje: <span id="score">0</span></p>
+      <button id="btnMenu">Volver al menú</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="sounds.js"></script>
+  <script src="player.js"></script>
+  <script src="levels.js"></script>
+  <script src="game.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
