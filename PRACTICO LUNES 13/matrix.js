@@ -16,7 +16,6 @@ class Matrix {
         }    
     }
     
-//Fubcion de validACION DE RANGO VALIDO EN LA MATRIZ
     isValidPosition(row,col){
         return row >= 0 && row < this.rows &&  col>= 0 &&   col < this.cols;
     
@@ -46,7 +45,6 @@ class Matrix {
     }
 
    fillIncrementRows() {
-    // Cada fila i se rellena con el valor i (0..rows-1)
     for (let i = 0; i < this.rows; i++) {
         for (let j = 0; j < this.cols; j++) {
             this.data[i][j] = i;
@@ -60,11 +58,8 @@ class Matrix {
        return this.data.map(row => row.join('\t'). join('\n'));
     }
 
-    // ----------------------------
-    // EJERCICIOS DEL PRÁCTICO SIS-112
-    // ----------------------------
 
-    // 1
+    // EJ 1
     fillExercise1() {
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
@@ -73,7 +68,7 @@ class Matrix {
         }
     }
 
-    // 2
+    // EJ 2
     fillExercise2() {
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
@@ -86,7 +81,7 @@ class Matrix {
         }
     }
 
-    // 3
+    // EJ 3
     fillExercise3() {
         const mid = Math.floor(this.rows / 2);
         for (let i = 0; i < this.rows; i++) {
@@ -100,7 +95,7 @@ class Matrix {
         }
     }
 
-    // 4
+    // EJ 4
     fillExercise4() {
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
@@ -115,7 +110,7 @@ class Matrix {
         }
     }
 
-    // 5
+    // EJ 5
     fillExercise5() {
         const franja = Math.floor(this.rows / 3);
         for (let i = 0; i < this.rows; i++) {
@@ -129,7 +124,7 @@ class Matrix {
         }
     }
 
-    // 6
+    // EJ 6
     fillExercise6() {
         for (let i = 0; i < this.rows; i++) {
             const valor = i % 2 === 0 ? 1 : 0;
@@ -139,7 +134,7 @@ class Matrix {
         }
     }
 
-    // 7
+    // EJ 7
     fillExercise7() {
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
@@ -152,9 +147,8 @@ class Matrix {
         }
     }
 
-    // 8
+    // EJ 8
     fillExercise8() {
-    // Reiniciar matriz a ceros
     for (let i = 0; i < this.rows; i++) {
         for (let j = 0; j < this.cols; j++) {
             this.data[i][j] = 0;
@@ -167,30 +161,22 @@ class Matrix {
     let right = this.cols - 1;
 
     while (top <= bottom && left <= right) {
-        // izquierda -> derecha (fila superior)
         for (let j = left; j <= right; j++) this.data[top][j] = 1;
-        // bajar la frontera superior
         top++;
 
-        // arriba -> abajo (columna derecha)
         for (let i = top; i <= bottom; i++) this.data[i][right] = 1;
-        // mover la frontera derecha
         right--;
 
-        // derecha -> izquierda (fila inferior)
         if (top <= bottom) {
             for (let j = right; j >= left; j--) this.data[bottom][j] = 1;
             bottom--;
         }
 
-        // abajo -> arriba (columna izquierda)
         if (left <= right) {
             for (let i = bottom; i >= top; i--) this.data[i][left] = 1;
             left++;
         }
 
-        // Avanzamos las fronteras una vez más para dejar
-        // una "línea" de ceros entre esta vuelta y la siguiente.
         top++;
         left++;
         bottom--;
@@ -200,7 +186,7 @@ class Matrix {
 
 
 
-    // 9
+    // EJ 9
     fillExercise9() {
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
@@ -213,7 +199,7 @@ class Matrix {
         }
     }
 
-    // 10
+    // EJ 10
     fillExercise10() {
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
@@ -226,7 +212,7 @@ class Matrix {
         }
     }
 
-    // 11
+    // EJ 11
     fillExercise11() {
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
@@ -237,5 +223,106 @@ class Matrix {
                 }
             }
         }
+    }
+
+    // EJ 12
+    fillExercise12() {
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                if (i >= 1 && i <= 5 && j >= 4 - i + 1 && j <= 4 + i - 1) this.data[i][j] = 1;
+                else this.data[i][j] = 0;
+            }
+        }
+    }
+
+    // EJ 13
+    fillExercise13() {
+        const mid = Math.floor(this.rows / 2);
+        for (let i = 0; i < this.rows; i++)
+            for (let j = 0; j < this.cols; j++)
+                this.data[i][j] = (Math.abs(i - mid) + Math.abs(j - mid) <= mid) ? 1 : 0;
+    }
+
+    // EJ 14
+    fillExercise14() {
+        for (let i = 0; i < this.rows; i++)
+            for (let j = 0; j < this.cols; j++)
+                this.data[i][j] = (i === 2 || i === 7 || j === 2 || j === 7 || i === 4 || j === 4) ? 1 : 0;
+    }
+
+    // EJ 15
+    fillExercise15() {
+        for (let i = 0; i < this.rows; i++)
+            for (let j = 0; j < this.cols; j++)
+                this.data[i][j] = (j <= i) ? 1 : 0;
+    }
+
+    // EJ 16
+    fillExercise16() {
+        for (let i = 0; i < this.rows; i++)
+            for (let j = 0; j < this.cols; j++) {
+                if (i === 0 || i === 9 || j === 0 || j === 9) this.data[i][j] = 1;
+                else if (i >= 2 && i <= 7 && j >= 2 && j <= 7) {
+                    if (i === 2 || i === 7 || j === 2 || j === 7) this.data[i][j] = 2;
+                    else this.data[i][j] = 0;
+                } else this.data[i][j] = 0;
+            }
+    }
+
+   // EJ 17
+    fillExercise17() {
+    for (let i = 0; i < this.rows; i++) {
+        for (let j = 0; j < this.cols; j++) {
+            if (i === 0 || i === this.rows - 1 || j === 0 || j === this.cols - 1) {
+                // Bordes exteriores
+                this.data[i][j] = 1;
+            } 
+            // 🔹
+            else if (i >= 3 && i <= 6 && j >= 3 && j <= 6) {
+                this.data[i][j] = 2;
+            } 
+            else {
+                this.data[i][j] = 0;
+            }
+        }
+    }
+}
+
+
+    // EJ 18
+    fillExercise18() {
+        for (let i = 0; i < this.rows; i++)
+            for (let j = 0; j < this.cols; j++)
+                this.data[i][j] = (i % 2 === 0 || j === 0 || j === 9) ? 1 : 0;
+    }
+
+    // EJ 19
+    fillExercise19() {
+        for (let i = 0; i < this.rows; i++)
+            for (let j = 0; j < this.cols; j++)
+                this.data[i][j] = ((i + j) % 4 === 0 || (i - j) % 4 === 0) ? 1 : 0;
+    }
+
+    // EJ 20
+    fillExercise20() {
+        for (let i = 0; i < this.rows; i++)
+            for (let j = 0; j < this.cols; j++)
+                this.data[i][j] = (i + j < 4 || i - j > 5 || j - i > 5 || i + j > 13) ? 1 : 0;
+    }
+
+    // EJ 21
+    fillExercise21() {
+        for (let i = 0; i < this.rows; i++)
+            for (let j = 0; j < this.cols; j++)
+                this.data[i][j] = (i + j) % 2 === 0 ? 1 : 0;
+    }
+
+    // EJ 22
+    fillExercise22() {
+        for (let i = 0; i < this.rows; i++)
+            for (let j = 0; j < this.cols; j++) {
+                const cond = (j >= i && j < this.cols - i) || (j <= i && j >= this.cols - i - 1);
+                this.data[i][j] = cond ? 1 : 0;
+            }
     }
 }
