@@ -35,7 +35,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow-y: auto; /* permite hacer scroll si hay muchos botones */
+  overflow-y: auto;
 }
 
 .sidebar h2 {
@@ -90,7 +90,6 @@ canvas {
   border: 2px solid var(--ucb-gray);
 }
 
-/* NUEVO: secciones más limpias dentro del panel lateral */
 .sidebar h2:nth-of-type(2) {
   margin-top: 20px;
 }
@@ -129,4 +128,12 @@ canvas {
   .canvas-area {
     padding: 0.5em;
   }
+}
+
+/* 🔹 
+.sidebar h2:nth-of-type(3) {
+  margin-top: 25px;
+  color: #ffd633;
+  border-top: 1px dashed var(--ucb-yellow);
+  padding-top: 10px;
 }
