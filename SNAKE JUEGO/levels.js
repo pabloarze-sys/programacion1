@@ -1,99 +1,49 @@
 // ===== levels.js =====
-
-// Lista de niveles con propiedades y estado inicial
 const levels = [
   {
     number: 1,
-    name: "Primavera 🌸",
+    name: "JARDÍN",
     fruitColor: "red",
     fruitValue: 10,
     speed: 150,
+    targetPoints: 50,
+    allowSilver: false,
     obstacles: [],
-    locked: false, // primer nivel desbloqueado
+    locked: false
   },
   {
     number: 2,
-    name: "Verano 🏖️",
-    fruitColor: "silver", // manzana plateada
-    fruitValue: 20,
+    name: "CASA",
+    fruitColor: "red",
+    fruitValue: 10,
     speed: 130,
-    obstacles: [
-      { x: 5, y: 5 },
-      { x: 10, y: 15 },
-    ],
-    locked: true,
+    targetPoints: 100,
+    allowSilver: true,
+    silverValue: 20,
+    silverRespawnMs: 5000,
+    obstacles: [{ x: 5, y: 5 }, { x: 10, y: 15 }],
+    locked: true
   },
   {
     number: 3,
-    name: "Invierno ❄️",
-    fruitColor: "gold", // manzana dorada
-    fruitValue: 30,
+    name: "CÁRCEL",
+    fruitColor: "red",
+    fruitValue: 10,
     speed: 110,
-    obstacles: [
-      { x: 4, y: 10 },
-      { x: 8, y: 12 },
-      { x: 12, y: 6 },
-    ],
-    locked: true,
-  },
-  {
-    number: 4,
-    name: "Halloween 🎃",
-    fruitColor: "orange",
-    fruitValue: 40,
-    speed: 90,
-    obstacles: [
-      { x: 6, y: 6 },
-      { x: 7, y: 7 },
-      { x: 13, y: 10 },
-      { x: 14, y: 14 },
-    ],
-    locked: true,
-  },
-  {
-    number: 5,
-    name: "Cárcel Final 🕷️",
-    fruitColor: "purple",
-    fruitValue: 50,
-    speed: 70,
-    obstacles: [
-      { x: 5, y: 5 },
-      { x: 6, y: 5 },
-      { x: 7, y: 5 },
-      { x: 10, y: 10 },
-      { x: 15, y: 15 },
-    ],
-    locked: true,
-  },
+    targetPoints: 150,
+    allowSilver: false,
+    obstacles: [{ x: 4, y: 10 }, { x: 8, y: 12 }, { x: 12, y: 6 }],
+    locked: true
+  }
 ];
 
-// ===== FUNCIONES =====
+function getLevel(n){ return levels.find(l => l.number === n); }
+function getAllLevels(){ return levels; }
+function unlockNextLevel(n){ const next = getLevel(n+1); if (next) next.locked = false; }
+function resetLevels(){ levels.forEach((l,i)=> l.locked = i!==0 ); }
 
-// Devuelve un nivel según su número
-function getLevel(number) {
-  return levels.find(lvl => lvl.number === number);
-}
-
-// Devuelve todos los niveles
-function getAllLevels() {
-  return levels;
-}
-
-// Desbloquea el siguiente nivel
-function unlockNextLevel(number) {
-  const nextLevel = getLevel(number + 1);
-  if (nextLevel) nextLevel.locked = false;
-}
-
-// Reinicia todos los niveles (sólo el primero desbloqueado)
-function resetLevels() {
-  levels.forEach((lvl, idx) => {
-    lvl.locked = idx !== 0;
-  });
-}
-
-// Exportación global para otros scripts
 window.getLevel = getLevel;
 window.getAllLevels = getAllLevels;
 window.unlockNextLevel = unlockNextLevel;
 window.resetLevels = resetLevels;
+

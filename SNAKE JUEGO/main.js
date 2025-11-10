@@ -1,87 +1,100 @@
+// ===== main.js (simple y directo) =====
 let playerName = "";
 let currentLevel = 1;
-let maxLevelUnlocked = 1;
 
 const startScreen = document.getElementById("start-screen");
-const levelMenu = document.getElementById("menu-screen");
-const gameScreen = document.getElementById("game-screen");
+const levelMenu   = document.getElementById("menu-screen");
+const gameScreen  = document.getElementById("game-screen");
 const levelsContainer = document.getElementById("levelsContainer");
-const nameInput = document.getElementById("playerName");
+const nameInput   = document.getElementById("playerName");
 const startButton = document.getElementById("btnStart");
-const btnMenu = document.getElementById("btnMenu");
-const btnReset = document.getElementById("btnReset");
+const btnMenu     = document.getElementById("btnMenu");
+const btnReset    = document.getElementById("btnReset");
+const levelTitle  = document.getElementById("levelTitle");
 
+// Fecha en inicio
+function formatNow(){
+  const n = new Date();
+  const dd=String(n.getDate()).padStart(2,"0");
+  const mm=String(n.getMonth()+1).padStart(2,"0");
+  const yy=n.getFullYear();
+  const hh=String(n.getHours()).padStart(2,"0");
+  const mi=String(n.getMinutes()).padStart(2,"0");
+  return `${dd}/${mm}/${yy} ${hh}:${mi}`;
+}
+const todayDate = document.getElementById("today-date");
+if (todayDate){ todayDate.textContent = `Hoy: ${formatNow()}`; setInterval(()=>todayDate.textContent=`Hoy: ${formatNow()}`,1000); }
+
+// Inicio: pedir nombre y pasar al menú
 startButton.addEventListener("click", () => {
-  playButtonSound(); // 🔊 sonido de clic en botón
-
-  const name = nameInput.value.trim();
-  if(!name){ alert("Escribe tu nombre!"); return; }
+  const name = (nameInput.value||"").trim();
+  if (!name){ alert("Escribe tu nombre"); return; }
   playerName = name;
-  setPlayerName(playerName);
-  loadPlayerData();
-  maxLevelUnlocked = getMaxLevelUnlocked();
-  generateLevelButtons();
-  showLevelMenu();
+  setPlayerName && setPlayerName(playerName);
+  loadPlayerData && loadPlayerData();
+  renderLevelButtons();
+  startScreen.classList.remove("active");
+  levelMenu.classList.add("active");
 });
 
-function generateLevelButtons() {
+// Generar botones de niveles según progreso
+function renderLevelButtons(){
   levelsContainer.innerHTML = "";
+  const maxUnlocked = (getMaxLevelUnlocked && getMaxLevelUnlocked()) || 1;
   getAllLevels().forEach(lvl=>{
     const btn = document.createElement("button");
-    btn.classList.add("level-btn");
-    btn.textContent = lvl.name;
-    btn.dataset.level = lvl.number;
-    if(lvl.locked){ btn.classList.add("locked"); btn.disabled=true; }
-    btn.addEventListener("click",()=>{
-      if(!lvl.locked){
-        playButtonSound(); // 🔊 sonido al seleccionar nivel
-        startLevel(lvl.number);
-      }
-    });
+    btn.className = "level-btn";
+    btn.textContent = `${lvl.number} — ${lvl.name}`;
+    if (lvl.number > maxUnlocked){ btn.disabled = true; btn.classList.add("locked"); }
+    btn.addEventListener("click", ()=> startLevel(lvl.number));
     levelsContainer.appendChild(btn);
   });
-  updateLevelButtons();
 }
 
-function updateLevelButtons(){
-  getAllLevels().forEach((lvl,i)=>{
-    const btn = levelsContainer.children[i];
-    if(!btn) return;
-    if(lvl.number <= maxLevelUnlocked){ btn.classList.remove("locked"); btn.disabled=false; }
-    else{ btn.classList.add("locked"); btn.disabled=true; }
-  });
-}
-
-function showLevelMenu(){
-  startScreen.style.display="none";
-  levelMenu.style.display="block";
-  gameScreen.style.display="none";
-}
-
+// Arrancar un nivel DIRECTO (sin modal)
 function startLevel(levelNumber){
   currentLevel = levelNumber;
-  levelMenu.style.display="none";
-  gameScreen.style.display="block";
+  levelMenu.classList.remove("active");
+  gameScreen.classList.add("active");
   document.body.className = `level-${levelNumber}`;
-  const levelData = getLevel(levelNumber);
-  startGame(levelData); // de game.js
+
+  const L = getLevel(levelNumber);
+  if (levelTitle) levelTitle.textContent = `Nivel ${levelNumber} — ${L?.name||""}`;
+
+  // 🔥 Inicia el juego ahora mismo
+  if (typeof startGame === "function") {
+    startGame(L);
+  } else {
+    alert("Error: startGame no está definido. Revisa el orden de los <script>.");
+  }
 }
 
-btnMenu.addEventListener("click",()=>{
-  playButtonSound(); // 🔊 sonido al volver al menú
-  gameScreen.style.display="none";
-  showLevelMenu();
+// Volver al menú
+btnMenu.addEventListener("click", ()=>{
+  gameScreen.classList.remove("active");
+  levelMenu.classList.add("active");
 });
 
-btnReset.addEventListener("click",()=>{
-  playButtonSound(); // 🔊 sonido al presionar "Reiniciar"
-  if(confirm("Borrar progreso?")){
-    localStorage.removeItem("snakePlayer");
-    playerName = "";
-    maxLevelUnlocked = 1;
-    resetLevels();
-    startScreen.style.display="block";
-    levelMenu.style.display="none";
-    gameScreen.style.display="none";
+// Reiniciar progreso
+btnReset.addEventListener("click", ()=>{
+  if (confirm("¿Borrar progreso?")){
+    resetPlayerData && resetPlayerData();
+    resetLevels && resetLevels();
+    renderLevelButtons();
+    startScreen.classList.add("active");
+    levelMenu.classList.remove("active");
+    gameScreen.classList.remove("active");
   }
 });
+
+// Exponer (por si game.js quiere avisar fin)
+window.levelComplete = function(score){
+  alert(`✅ ¡Nivel ${currentLevel} completado!\nPuntaje: ${score}`);
+  awardLevelCompletion && awardLevelCompletion(currentLevel, score);
+  unlockNextLevel && unlockNextLevel(currentLevel);
+  gameScreen.classList.remove("active");
+  levelMenu.classList.add("active");
+  renderLevelButtons();
+};
+
+

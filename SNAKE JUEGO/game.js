@@ -1,13 +1,17 @@
-// ===== game.js =====
+// ===== game.js (canvas-only, listo para jugar) =====
 
 // Canvas y contexto
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// Tamaño de cada celda
+// Grid
 const box = 20;
+const GRID_W = 30;
+const GRID_H = 30;
+canvas.width  = GRID_W * box; // 600
+canvas.height = GRID_H * box; // 600
 
-// Variables del juego
+// Estado
 let snake = [];
 let direction = "RIGHT";
 let food = {};
@@ -18,199 +22,187 @@ let speed = 150;
 let currentFruitColor = "red";
 let currentFruitValue = 10;
 let currentObstacles = [];
-
 let currentLevelNumber = 1;
+let targetPoints = 50;
 
-// ===== Iniciar el juego =====
+// Nivel 2: manzana plateada (una a la vez)
+let allowSilver = false;
+let silverValue = 20;
+let silverRespawnMs = 5000;
+let silverActive = false;
+let silverPos = null;
+let silverTimer = null;
+
+// ===== Inicio del juego =====
 function startGame(levelData) {
   if (!levelData) return;
 
   currentLevelNumber = levelData.number;
+
   snake = [{
-    x: Math.floor(canvas.width / 2 / box) * box,
-    y: Math.floor(canvas.height / 2 / box) * box
+    x: Math.floor(GRID_W / 2) * box,
+    y: Math.floor(GRID_H / 2) * box
   }];
   direction = "RIGHT";
   score = 0;
-  currentFruitColor = levelData.fruitColor;
-  currentFruitValue = levelData.fruitValue;
-  currentObstacles = levelData.obstacles;
-  speed = levelData.speed;
 
-  food = randomFood();
+  currentFruitColor = levelData.fruitColor ?? "red";
+  currentFruitValue = levelData.fruitValue ?? 10;
+  currentObstacles  = levelData.obstacles || [];
+  speed             = levelData.speed || 150;
+  targetPoints      = levelData.targetPoints || 50;
 
-  // Mostrar canvas
-  canvas.style.display = "block";
+  allowSilver     = !!levelData.allowSilver;
+  silverValue     = levelData.silverValue ?? 20;
+  silverRespawnMs = levelData.silverRespawnMs ?? 5000;
+  stopSilver();
+  if (allowSilver) scheduleSilver();
 
-  // Limpiar intervalo anterior
+  food = randomFreeCell();
+
   clearInterval(gameInterval);
   gameInterval = setInterval(drawGame, speed);
 
-  // Evento de teclado
   document.onkeydown = changeDirection;
 
-  // Mostrar puntaje
-  document.getElementById("score").textContent = `Puntaje: ${score}`;
+  setScoreUI(0);
 }
 
-// ===== Generar comida aleatoria =====
-function randomFood() {
-  let newFood;
-  let valid = false;
-
-  while (!valid) {
-    newFood = {
-      x: Math.floor(Math.random() * (canvas.width / box)) * box,
-      y: Math.floor(Math.random() * (canvas.height / box)) * box
+// ===== Utilidades =====
+function randomFreeCell() {
+  let c;
+  do {
+    c = {
+      x: Math.floor(Math.random() * GRID_W) * box,
+      y: Math.floor(Math.random() * GRID_H) * box
     };
-
-    if (!snake.some(s => s.x === newFood.x && s.y === newFood.y) &&
-        !currentObstacles.some(o => o.x * box === newFood.x && o.y * box === newFood.y)) {
-      valid = true;
-    }
-  }
-
-  return newFood;
+  } while (
+    snake.some(s => s.x === c.x && s.y === c.y) ||
+    currentObstacles.some(o => (o.x * box === c.x && o.y * box === c.y)) ||
+    (silverActive && silverPos && silverPos.x === c.x && silverPos.y === c.y)
+  );
+  return c;
 }
 
-// ===== Cambiar dirección de la serpiente =====
-function changeDirection(event) {
-  if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
-  else if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
-  else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
-  else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+function changeDirection(e) {
+  if (e.key === "ArrowLeft"  && direction !== "RIGHT") direction = "LEFT";
+  else if (e.key === "ArrowUp"    && direction !== "DOWN")  direction = "UP";
+  else if (e.key === "ArrowRight" && direction !== "LEFT")  direction = "RIGHT";
+  else if (e.key === "ArrowDown"  && direction !== "UP")    direction = "DOWN";
 }
 
-// ===== Dibujar juego =====
+// ===== Bucle =====
 function drawGame() {
+  // Fondo
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Dibujar obstáculos
+  // Obstáculos
+  ctx.fillStyle = "#ffffff";
   currentObstacles.forEach(obs => {
-    ctx.fillStyle = "white";
     ctx.fillRect(obs.x * box, obs.y * box, box, box);
   });
 
-  // Dibujar comida
-  //ctx.fillStyle = currentFruitColor;
-  //ctx.fillRect(food.x, food.y, box, box);
-
-  // Dibujar serpiente
-  //snake.forEach((seg, idx) => {
-    //ctx.fillStyle = idx === 0 ? "green" : "lightgreen";
-    //ctx.fillRect(seg.x, seg.y, box, box);
-  //});
-
-  // Nueva posición de la cabeza
+  // Próxima cabeza
   let headX = snake[0].x;
   let headY = snake[0].y;
-
-  if (direction === "LEFT") headX -= box;
-  else if (direction === "RIGHT") headX += box;
-  else if (direction === "UP") headY -= box;
-  else if (direction === "DOWN") headY += box;
-
-  // Comer comida
-  if (headX === food.x && headY === food.y) {
-    score += currentFruitValue;
-    food = randomFood();
-  } else {
-    snake.pop();
-  }
+  if (direction === "LEFT")  headX -= box;
+  if (direction === "RIGHT") headX += box;
+  if (direction === "UP")    headY -= box;
+  if (direction === "DOWN")  headY += box;
 
   const newHead = { x: headX, y: headY };
 
-  // Colisiones
-  if (headX < 0 || headY < 0 || headX >= canvas.width || headY >= canvas.height ||
-      snakeCollision(newHead) || obstacleCollision(newHead)) {
-    endGame();
-    return;
+  // Colisiones duras (no se sale)
+  if (headX < 0 || headY < 0 || headX >= canvas.width || headY >= canvas.height) { endGame(); return; }
+  if (snakeCollision(newHead)) { endGame(); return; }
+  if (obstacleCollision(newHead)) { endGame(); return; }
+
+  // Comer plateada
+  let grew = false;
+  if (allowSilver && silverActive && silverPos && headX === silverPos.x && headY === silverPos.y) {
+    score += silverValue;
+    grew = true;
+    removeSilver();
   }
 
+  // Comer normal
+  if (headX === food.x && headY === food.y) {
+    score += currentFruitValue;
+    grew = true;
+    food = randomFreeCell();
+  }
+
+  if (!grew) snake.pop();
   snake.unshift(newHead);
 
-  // Mostrar puntaje
-  document.getElementById("score").textContent = `Puntaje: ${score}`;
+  // ===== Dibujo en canvas =====
+  // Comida normal
+  ctx.fillStyle = currentFruitColor || "red";
+  ctx.fillRect(food.x, food.y, box, box);
+
+  // Plateada (si hay)
+  if (allowSilver && silverActive && silverPos) {
+    ctx.fillStyle = "#cbd5e1"; // gris claro
+    ctx.fillRect(silverPos.x, silverPos.y, box, box);
+  }
+
+  // Serpiente
+  for (let i = 0; i < snake.length; i++) {
+    ctx.fillStyle = i === 0 ? "green" : "lightgreen";
+    ctx.fillRect(snake[i].x, snake[i].y, box, box);
+  }
+
+  setScoreUI(score);
+
+  // ¿Meta alcanzada?
+  if (score >= targetPoints) {
+    clearInterval(gameInterval);
+    stopSilver();
+    if (typeof levelComplete === "function") levelComplete(score);
+    else endGame(true);
+  }
 }
 
-// ===== Colisión con cuerpo =====
+// ===== Colisiones =====
 function snakeCollision(head) {
-  return snake.some(seg => seg.x === head.x && seg.y === head.y);
+  return snake.some((seg, i) => i > 0 && seg.x === head.x && seg.y === head.y);
 }
-
-// ===== Colisión con obstáculos =====
 function obstacleCollision(head) {
   return currentObstacles.some(obs => head.x === obs.x * box && head.y === obs.y * box);
 }
 
-// ===== Fin del juego =====
-function endGame() {
+// ===== Fin =====
+function endGame(completed = false) {
   clearInterval(gameInterval);
-
-  playGameOverSound(); // 🔊 sonido al terminar el juego
-
-  alert(`🐍 Fin del juego, ${getPlayerName()}!\nPuntaje: ${score}\nNivel alcanzado: ${currentLevelNumber}`);
-
-  // Desbloquear siguiente nivel si aplica
-  if (score >= 50 && currentLevelNumber < 5) { // puntaje mínimo para desbloquear
-    unlockPlayerLevel(currentLevelNumber);
-    unlockNextLevel(currentLevelNumber); // levels.js
-    alert(`¡Desbloqueaste el Nivel ${currentLevelNumber + 1}! 🎉`);
+  stopSilver();
+  if (completed) {
+    playLevelUpSound && playLevelUpSound();
+    alert(`✅ ¡Nivel ${currentLevelNumber} completado!\nPuntaje: ${score}`);
+    unlockPlayerLevel && unlockPlayerLevel(currentLevelNumber);
+    unlockNextLevel && unlockNextLevel(currentLevelNumber);
+  } else {
+    playGameOverSound && playGameOverSound();
+    alert(`🐍 Fin del juego, ${getPlayerName ? getPlayerName() : "Jugador"}!\nPuntaje: ${score}`);
   }
-
-  // Volver al menú
-  canvas.style.display = "none";
-  document.getElementById("game-screen").style.display = "none";
-  document.getElementById("menu-screen").style.display = "block";
-
-  // Actualizar botones
+  document.getElementById("game-screen").classList.remove("active");
+  document.getElementById("menu-screen").classList.add("active");
   if (typeof updateLevelButtons === "function") updateLevelButtons();
 }
 
-// ===== 🐍 VIBORITA ANIMADA VISUAL =====
-
-// Contenedor del juego
-const gameContainer = document.getElementById("game-container");
-let snakeElements = [];
-let foodElement = null;
-
-// Dibujar segmentos visuales de la víbora
-function renderSnakeVisual() {
-  // Limpiar segmentos anteriores
-  snakeElements.forEach(el => el.remove());
-  snakeElements = [];
-
-  // Crear nuevos segmentos
-  snake.forEach((seg, index) => {
-    const segment = document.createElement("div");
-    segment.classList.add("snake-segment");
-    if (index === 0) segment.classList.add("snake-head");
-    segment.style.left = `${seg.x}px`;
-    segment.style.top = `${seg.y}px`;
-    segment.style.position = "absolute";
-    segment.style.setProperty("--i", index);
-    gameContainer.appendChild(segment);
-    snakeElements.push(segment);
-  });
-
-  // Redibujar fruta visual
-  renderFoodVisual();
+// ===== UI =====
+function setScoreUI(v) {
+  const s = document.getElementById("score");
+  if (s) s.textContent = String(v);
 }
 
-// Dibujar fruta animada
-function renderFoodVisual() {
-  if (foodElement) foodElement.remove();
-  foodElement = document.createElement("div");
-  foodElement.classList.add("apple");
-  foodElement.style.left = `${food.x}px`;
-  foodElement.style.top = `${food.y}px`;
-  foodElement.style.position = "absolute";
-  gameContainer.appendChild(foodElement);
+// ===== Plata =====
+function scheduleSilver() {
+  if (silverTimer) clearInterval(silverTimer);
+  silverTimer = setInterval(() => { if (!silverActive) spawnSilver(); }, silverRespawnMs);
 }
+function stopSilver() { if (silverTimer) clearInterval(silverTimer); silverTimer = null; removeSilver(); }
+function spawnSilver() { if (silverActive) return; silverPos = randomFreeCell(); silverActive = true; }
+function removeSilver() { silverActive = false; silverPos = null; }
 
-// Interceptar el bucle del juego para renderizar animaciones visuales
-const originalDrawGame = drawGame;
-drawGame = function() {
-  originalDrawGame();  // mantiene toda la lógica original
-  renderSnakeVisual(); // añade la víbora visual animada
-};
+// ===== Export =====
+window.startGame = startGame;
