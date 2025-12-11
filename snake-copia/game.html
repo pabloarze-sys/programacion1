@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snake 2D</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <main class="canvas-area">
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas"></canvas>
+    </div>
+  </main>
+  <div class="controls-area">
+    <button id="btnVolver" style="display:none;" onclick="game.cambiarNivel(game.nivelActual - 1)">Volver al Nivel Anterior</button>
+
+    <button id="btnNivel1" onclick="game.cambiarNivel(1)">Nivel 1</button>
+    <button id="btnNivel2" disabled onclick="game.cambiarNivel(2)">Nivel 2</button>
+    <button id="btnNivel3" disabled onclick="game.cambiarNivel(3)">Nivel 3</button>
+    
+    <button id="btnNextLevel" onclick="game.probarSiguienteNivel()" disabled>Siguiente Nivel</button>
+  </div>
+
+  
+  <script src="./js/matrix.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/player.js"></script>
+  <script src="./js/game.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
+
+<!--
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TankShoot 2D</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="canvas-area">
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas"></canvas>
+    </div>
+  </main>
+
+   Carga los scripts en orden sin módulos 
+  <script src="matrix.js"></script>
+  <script src="main.js"></script>
+  <script src="player.js"></script>
+  <script src="game.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+-->
