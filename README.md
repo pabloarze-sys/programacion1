@@ -4,11 +4,14 @@
 
 <img width="512" height="512" alt="UCB" src="https://github.com/user-attachments/assets/59951f71-2e9d-463c-8f35-93a9c99edacf" />
 
-
 **Universidad:** Universidad Católica Boliviana (UCB)
+
 **Asignatura:** Programación 1 (SIS-112)
+
 **Docente:** Ing. Eddy Escalante
+
 **Carrera:** Ingeniería Industrial
+
 **Fecha de presentación:** 12/12/2025
 
 ### Integrantes
