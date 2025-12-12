@@ -417,22 +417,22 @@ En conjunto, el proyecto demostró que es posible desarrollar un videojuego comp
 ### Fragmentos de Código Importantes
 
 En esta sección se presentan los fragmentos más relevantes del videojuego, seleccionados por su aporte a la lógica central del proyecto. Estos ejemplos permiten comprender cómo se implementaron las mecánicas principales del juego.
-```javascript
+
 ### 6.1 Inicialización del jugador (Player.js)
 
 Este fragmento muestra cómo se ubica la serpiente en el centro del área jugable y cómo se define su dirección inicial.
 
-``javascript
+```javascript
 initBody() {
   const startRow = this.playableRowStart + Math.floor(this.playableRows / 2);
   const startCol = this.playableColStart + Math.floor(this.playableCols / 2);
   return [{ row: startRow, col: startCol }];
 }
-
+```
 ### 6.2 Movimiento y crecimiento del jugador
 
 Define las acciones principales de la serpiente: avanzar y crecer al comer una manzana.
-
+```javascript
 move(newHead) {
   this.body.unshift(newHead);
   this.body.pop();
@@ -441,11 +441,11 @@ move(newHead) {
 grow(newHead) {
   this.body.unshift(newHead);
 }
-
+```
 ### 6.3 Detección de colisiones (Game.js)
 
 Este fragmento determina si la serpiente choca contra paredes, obstáculos o consigo misma.
-
+```javascript
 if (
   this.esObstaculo(this.mapMatrix.getValue(newHead.row, newHead.col)) ||
   isSelfCollision
@@ -453,11 +453,11 @@ if (
   this.endGame("¡Nooo, chocaste!");
   return;
 }
-
+```
 ### 6.4 Generación de manzanas especiales
 
 Controla la aparición de manzanas doradas y multicolor en los niveles 2 y 3.
-
+```javascript
 if (this.nivelActual === 2 && this.doradasRestantes > 0 && Math.random() < 0.3) {
   tipoManzana = 24; 
   this.doradasRestantes--;
@@ -465,11 +465,11 @@ if (this.nivelActual === 2 && this.doradasRestantes > 0 && Math.random() < 0.3) 
   tipoManzana = 25; 
   this.multicolorRestantes--;
 }
-
+```
 ### 6.5 Renderizado del mapa y del jugador (Game.js)
 
 Aquí se dibuja el mapa completo, la manzana y cada segmento de la serpiente utilizando el canvas.
-
+```javascript
 this.ctx.drawImage(
   img,
   offsetX + c * this.cellSize,
@@ -488,11 +488,11 @@ this.player.body.forEach((part, i) => {
     this.cellSize
   );
 });
-
+```
 ### 6.6 Representación de niveles en matriz (main.js)
 
 Los niveles se definen mediante matrices que dictan paredes, obstáculos y áreas disponibles.
-
+```javascript
 const LEVELS = {
   1: [
     [0,1,1,1,1,...],
@@ -503,11 +503,11 @@ const LEVELS = {
   2: [...],
   3: [...]
 };
-
+```
 ### 6.7 Sistema de niveles desbloqueables (app.js)
 
 Fragmento que controla qué niveles están habilitados para el jugador.
-
+```javascript
 const nivelesDesbloqueados = {
   1: true,
   2: false,
@@ -517,11 +517,11 @@ const nivelesDesbloqueados = {
 function unlockNextLevelButton(nextLevel) {
   nivelesDesbloqueados[nextLevel] = true;
 }
-
+```
 ### 6.8 Manejo del teclado e integración con el Dobot MG400
 
 El juego interpreta las señales enviadas por el robot como si fueran teclas del jugador.
-
+```javascript
 document.addEventListener("keydown", (e) => {
   if (this.gameOver || this.isPaused) return;
 
@@ -535,3 +535,4 @@ document.addEventListener("keydown", (e) => {
 
   if (newDirection) this.player.setDirection(newDirection);
 });
+```
