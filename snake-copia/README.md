@@ -417,7 +417,7 @@ En conjunto, el proyecto demostró que es posible desarrollar un videojuego comp
 ### Fragmentos de Código Importantes
 
 En esta sección se presentan los fragmentos más relevantes del videojuego, seleccionados por su aporte a la lógica central del proyecto. Estos ejemplos permiten comprender cómo se implementaron las mecánicas principales del juego.
-
+```javascript
 ### 6.1 Inicialización del jugador (Player.js)
 
 Este fragmento muestra cómo se ubica la serpiente en el centro del área jugable y cómo se define su dirección inicial.
