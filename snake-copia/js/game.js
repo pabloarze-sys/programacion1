@@ -199,9 +199,9 @@ class SnakeGame {
   }
 
   ajustarVelocidad() {
-    if (this.nivelActual === 1) this.velocidad = 1500;
-    if (this.nivelActual === 2) this.velocidad = 1200;
-    if (this.nivelActual === 3) this.velocidad = 900;
+    if (this.nivelActual === 1) this.velocidad = 2000;
+    if (this.nivelActual === 2) this.velocidad = 1500;
+    if (this.nivelActual === 3) this.velocidad = 1000;
   }
 
   esObstaculo(valor) {
@@ -403,6 +403,18 @@ class SnakeGame {
 
     const offsetX = (this.canvas.width - this.cols * this.cellSize) / 2;
     const offsetY = (this.canvas.height - this.rows * this.cellSize) / 2;
+    
+    // DIBUJAR FONDO EN TODO EL CANVAS
+    const fondoImg = this.images[31];
+    if (fondoImg && fondoImg.complete) {
+        this.ctx.drawImage(
+            fondoImg,
+            0,
+            0,
+            this.canvas.width,
+            this.canvas.height
+        );
+    }
 
     // Dibujar mapa
     for (let r = 0; r < this.rows; r++) {
@@ -446,14 +458,6 @@ class SnakeGame {
       );
     });
 
-    // Texto de información
-    this.ctx.fillStyle = "white";
-    this.ctx.font = "30px Arial";
-    this.ctx.fillText(
-      `Nivel: ${this.nivelActual} | Score: ${this.score}/${this.maxScorePorNivel[this.nivelActual - 1]} | Manzanas: ${this.applesEatenInLevel}/${this.manzanasRequeridas}`,
-      10,
-      20
-    );
   }
 
   loop() {
